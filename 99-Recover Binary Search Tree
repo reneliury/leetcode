@@ -1,0 +1,51 @@
+https://leetcode.com/problems/recover-binary-search-tree/
+
+description：
+  Two elements of a binary search tree (BST) are swapped by mistake.
+  Recover the tree without changing its structure.
+  
+solution：
+  BST重要特性，中序遍历是排序数组。所以中序遍历后找出两个逆序数，交换即可。
+  是判断一棵树是否为BST的变式题。通过定义一个pre节点比较cur和前驱节点。
+  
+  1、通过定义stack非递归
+  
+  2、通过递归解决
+  //此处用了TreeNod** pre, **small, **large; 作为函数参数，希望作为传址引用。要特别注意。
+  //还有一种方式可以把这三个变量定义在函数外面，作为全局变量。
+  class Solution {
+  public:
+    void recoverTree(TreeNode* root) {
+        TreeNode **small=new TreeNode*();
+        TreeNode **large=new TreeNode*();
+        TreeNode **pre=new TreeNode*();
+        *small=NULL;
+        *large=NULL;
+        *pre=NULL;
+        findMistake(root,pre,small,large);
+        if(*small&&*large){
+            (*small)->val=(*small)->val^(*large)->val;
+            (*large)->val=(*small)->val^(*large)->val;
+            (*small)->val=(*small)->val^(*large)->val;
+        }
+    }
+    void findMistake(TreeNode* cur, TreeNode **pre, TreeNode **small, TreeNode **large){
+        if(cur->left)
+            findMistake(cur->left,pre,small,large);
+        if(*pre&&(*pre)->val>cur->val){
+            if(!(*small)){
+                *small=*pre;
+            }
+            if(*small){
+                *large=cur;
+            }
+        }
+        *pre=cur;
+        if(cur->right)
+            findMistake(cur->right,pre,small,large);
+    } 
+};
+  
+  3、Morris 中序遍历法
+    空间复杂度为 O(1) 哦~~~
+  
